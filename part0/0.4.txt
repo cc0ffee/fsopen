@@ -1,0 +1,12 @@
+
+
+Browser->Server: GET https://studies.cs.helsinki.fi/exampleapp/spa
+Server->Browser: Sent text/html
+Browser->Server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
+Server->Browser: Sent main.css
+Browser->Server: GET https://studies.cs.helsinki.fi/exampleapp/spa.js
+Server->Browser: Sent main.js
+Browser->Server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
+Server->Browser: Sent json data
+Browser->Server: POST to https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+note over Browser: rerenders to show new note

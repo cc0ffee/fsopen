@@ -1,0 +1,6 @@
+
+
+
+Browser->Server: POST to https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+Server->Browser: {"message":"note created"}
+note over Browser: rerenders to show new note
