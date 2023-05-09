@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import List from './components/List'
 import PersonForm from './components/PersonForm'
+import Notification from './components/Notification'
 import personService from './services/persons'
 
 const App = () => {
@@ -12,24 +13,43 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [newSearch, setNewSearch] = useState('')
+  const [newNotification, setNewNotification] = useState(null)
 
   const addNewName = (event) => {
     event.preventDefault()
-    const nameMatch = (person1, person2) => person1.toLowerCase() === person2.toLowerCase()
+    const matchedPerson = persons.find((person) => person.name === newName)
+    if(matchedPerson) {
+      if(window.confirm(`${matchedPerson.name} is already added to the phonebook, replace the old number with a new one?`)) {
+        const nameObject = {name: newName, number: newPhone, id: matchedPerson.id}
+        personService.update(matchedPerson.id, nameObject).then(() => {
+          setPersons(persons.filter((person)=>person.id!==matchedPerson.id).concat(nameObject))
+          setNewNotification(`Updated ${matchedPerson.name}`)
+          setTimeout(()=>setNewNotification(null), 5000)}
+      )}
+      return
+    }
     const nameObject = {
       name: newName,
       number: newPhone,
       id: persons.length + 1 
     }
     
-    personService.create(nameObject).then(returnedName => setPersons(persons.concat(returnedName)))
+    personService.create(nameObject).then(returnedName => {
+      setPersons(persons.concat(returnedName))
+      setNewNotification(`Added ${newName}`)
+      setTimeout(()=>setNewNotification(null), 5000)
+    })
     setNewName('')
+    setNewPhone('')
   }
 
   const handleDelete = (id, name) => {
     if(window.confirm(`Are you sure you want to delete ${name}`))
-      personService.vanish(id)
-      setPersons(persons.filter((person)=>person.id!==id))
+      personService.vanish(id).then(() => {
+        setPersons(persons.filter((person)=>person.id!==id))
+        setNewNotification(`Deleted ${name}`)
+        setTimeout(()=>setNewNotification(null), 5000)}
+      )
   }
 
   const handleNameChange = (event) => setNewName(event.target.value)
@@ -39,6 +59,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={newNotification}/>
       <Filter newSearch={newSearch} handleSearchChange={handleSearchChange}/>
       <h2>add a new</h2>
       <PersonForm addNewName={addNewName} newName={newName} newPhone={newPhone} handleNameChange={handleNameChange} handlePhoneChange={handlePhoneChange}/>
