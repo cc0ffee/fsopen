@@ -1,16 +1,29 @@
-import {setState} from 'react'
-
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 function App() {
-  const [newSearch, setSearch] = setState(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  useEffect(() => {
+    axios
+      .get('https://restcountries.com/v3.1/all')
+      .then(response => {
+        setSearchTerm(response.data)
+        console.log(response.data)
+      })
+  }, [])
   const Information = () => {
 
   }
-  
+
+  const onSearchChange = (event) => setSearchTerm(event.target.value)
   return (
     <>
       find countries
-      <input></input>
+      <input onChange={onSearchChange}></input>
+      <div>
+        <Information />
+      </div>
     </>
+
   );
 }
 
